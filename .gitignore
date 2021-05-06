@@ -1,0 +1,15 @@
+# IDE
+/.vscode
+
+# 构建
+/build
+
+# 配置文件
+conf.*
+
+# 模版文件
+!*.example
+
+# 日志
+/log
+*log
