@@ -23,7 +23,7 @@ type RSS struct {
 
 // ParseConfig 解析配置文件
 func ParseConfig() Config {
-	fileName, _ := filepath.Abs("./conf/conf.yaml")
+	fileName, _ := filepath.Abs("./conf.yaml")
 	yamlFile, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		log.Panic(err)
