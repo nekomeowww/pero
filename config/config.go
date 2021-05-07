@@ -12,13 +12,13 @@ import (
 type Config struct {
 	Token string `yaml:"token"`
 	Debug bool   `yaml:"debug"`
-	RSS   []RSS  `yaml:"rss"`
+
+	NutsDB NutsDB `yaml:"nutsdb"`
 }
 
-// RSS 配置结构
-type RSS struct {
-	Name string `yaml:"name"`
-	URI  string `yaml:"uri"`
+// NutsDB 配置
+type NutsDB struct {
+	Dir string `yaml:"path"`
 }
 
 // ParseConfig 解析配置文件
