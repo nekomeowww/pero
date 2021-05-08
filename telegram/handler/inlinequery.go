@@ -13,6 +13,6 @@ import (
 func HandleInlineQuery(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	log.Printf("来自用户 [%s] inline query：%s", update.InlineQuery.From, update.InlineQuery.Query)
 	s := scene.NewScene(update.InlineQuery)
-	sceneName := s.IsScene()
-	logger.Info(sceneName)
+	_, name, _ := s.GetScene()
+	logger.Info(name)
 }

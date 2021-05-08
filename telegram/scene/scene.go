@@ -1,6 +1,7 @@
 package scene
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -26,6 +27,12 @@ type UserScene struct {
 	Stage int    `json:"stage"`
 }
 
+// StageSubHandlers 阶段控制子函数
+type StageSubHandlers map[int]func(*tgbotapi.BotAPI, tgbotapi.Update)
+
+// StageHandlers 阶段控制
+type StageHandlers map[string]StageSubHandlers
+
 // NewScene 新建场景对象
 func NewScene(v interface{}) *Scene {
 	s := new(Scene)
@@ -38,34 +45,49 @@ func UserSceneKey(userID int) []byte {
 	return []byte(fmt.Sprintf("scene_%s", strconv.Itoa(userID)))
 }
 
-// IsScene 是否在场景中
-func (s *Scene) IsScene() string {
+// GetScene 是否在场景中
+func (s *Scene) GetScene() (bool, string, int) {
 	switch s.sceneType.(type) {
 	case *tgbotapi.Message:
 		messageScene := s.sceneType.(*tgbotapi.Message)
-		b, err := service.NutsDB.Get(Bucket, UserSceneKey(messageScene.From.ID))
-		if err != nil {
-			logger.Error(err)
-			return ""
+		us := ParseSceneInfo(messageScene.From.ID)
+		if us == nil {
+			return false, "", 0
 		}
-		return string(b)
+		return true, us.Name, us.Stage
 	case *tgbotapi.InlineQuery:
 		inlineScene := s.sceneType.(*tgbotapi.InlineQuery)
-		b, err := service.NutsDB.Get(Bucket, UserSceneKey(inlineScene.From.ID))
-		if err != nil {
-			logger.Error(err)
-			return ""
+		us := ParseSceneInfo(inlineScene.From.ID)
+		if us == nil {
+			return false, "", 0
 		}
-		return string(b)
+		return true, us.Name, us.Stage
 	case *tgbotapi.CallbackQuery:
 		callbackScene := s.sceneType.(*tgbotapi.CallbackQuery)
-		b, err := service.NutsDB.Get(Bucket, UserSceneKey(callbackScene.From.ID))
-		if err != nil {
-			logger.Error(err)
-			return ""
+		us := ParseSceneInfo(callbackScene.From.ID)
+		if us == nil {
+			return false, "", 0
 		}
-		return string(b)
+		return true, us.Name, us.Stage
 	default:
-		return ""
+		return false, "", 0
 	}
+}
+
+// ParseSceneInfo 解析场景信息
+func ParseSceneInfo(id int) *UserScene {
+	b, err := service.NutsDB.Get(Bucket, UserSceneKey(id))
+	if err != nil {
+		logger.Error(err)
+		return nil
+	}
+
+	us := new(UserScene)
+	err = json.Unmarshal(b, us)
+	if err != nil {
+		logger.Error(err)
+		return nil
+	}
+
+	return us
 }

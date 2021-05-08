@@ -5,8 +5,19 @@ import (
 
 	"github.com/nekomeowww/pero/logger"
 	"github.com/nekomeowww/pero/telegram/commands"
+	"github.com/nekomeowww/pero/telegram/controllers/base"
+	"github.com/nekomeowww/pero/telegram/controllers/rss"
 	"github.com/nekomeowww/pero/telegram/scene"
 )
+
+var mStageHandlers = map[string]scene.StageHandlers{
+	"newfeed": rss.StageHandlers(),
+}
+
+var mCommandHandlers = []commands.CommandHandlers{
+	rss.CommandHandlers(),
+	base.CommandHandlers(),
+}
 
 // HandleMessage 处理消息
 func HandleMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
@@ -15,15 +26,24 @@ func HandleMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	// 命令处理
 	isCommand, command, _ := commands.Parse(*update.Message)
 	if isCommand {
-		commands.Exec(bot, update, command)
+		commands.Exec(bot, update, command, mCommandHandlers)
 		return
 	}
 
 	// 场景处理
 	s := scene.NewScene(update.Message)
-	sceneName := s.IsScene()
-	if sceneName != "" {
-		logger.Info("用户 %d 在场景：%s", update.Message.From.ID, sceneName)
+	isScene, name, stage := s.GetScene()
+	if isScene {
+		logger.Infof("用户 %d 在场景：%s 的第 %d 阶段", update.Message.From.ID, name, stage)
+
+		if shc, ok := mStageHandlers[name]; ok {
+			if sfc, ok := shc[name]; ok {
+				if fc, ok := sfc[stage]; ok {
+					fc(bot, update)
+				}
+			}
+		}
+
 		return
 	}
 
