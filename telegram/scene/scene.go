@@ -9,6 +9,7 @@ import (
 
 	"github.com/nekomeowww/pero/logger"
 	"github.com/nekomeowww/pero/service"
+	"github.com/nekomeowww/pero/telegram/handler"
 )
 
 // Bucket 场景命名空间
@@ -90,4 +91,34 @@ func ParseSceneInfo(id int) *UserScene {
 	}
 
 	return us
+}
+
+// UpdateScene 更新场景状态
+func UpdateScene(userID int, name string, stage int) error {
+	var us UserScene
+	us.Name = name
+	us.Stage = stage
+	val, err := json.Marshal(us)
+	if err != nil {
+		return err
+	}
+
+	err = service.NutsDB.Set(Bucket, UserSceneKey(userID), val, 0)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Exec 执行函数
+func Exec(bot *tgbotapi.BotAPI, update tgbotapi.Update, sceneHandler handler.Groups) {
+	s := NewScene(update.Message)
+	_, name, stage := s.GetScene()
+	for i := range sceneHandler {
+		if sfc, ok := sceneHandler[i].Scenes[name]; ok {
+			if fc, ok := sfc[stage]; ok {
+				fc(bot, update)
+			}
+		}
+	}
 }

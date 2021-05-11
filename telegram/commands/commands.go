@@ -2,10 +2,11 @@ package commands
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/nekomeowww/pero/telegram/handler"
 )
 
-// CommandHandlers 命令函数
-type CommandHandlers map[string]func(*tgbotapi.BotAPI, tgbotapi.Update)
+// Handlers 命令函数
+type Handlers map[string]func(*tgbotapi.BotAPI, tgbotapi.Update)
 
 // Parse 解析 Telegram 消息命令
 func Parse(message tgbotapi.Message) (bool, string, string) {
@@ -29,9 +30,10 @@ func ParseWithAt(message tgbotapi.Message) (bool, string, string) {
 }
 
 // Exec 执行命令
-func Exec(bot *tgbotapi.BotAPI, update tgbotapi.Update, command string, commandFuncs []CommandHandlers) {
+func Exec(bot *tgbotapi.BotAPI, update tgbotapi.Update, commandFuncs handler.Groups) {
+	command := update.Message.Command()
 	for i := range commandFuncs {
-		if fc, ok := commandFuncs[i][command]; ok {
+		if fc, ok := commandFuncs[i].Commands[command]; ok {
 			fc(bot, update)
 		}
 	}
