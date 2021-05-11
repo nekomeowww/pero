@@ -2,9 +2,9 @@ package config
 
 import (
 	"io/ioutil"
-	"log"
 	"path/filepath"
 
+	"github.com/nekomeowww/pero/logger"
 	"gopkg.in/yaml.v2"
 )
 
@@ -26,7 +26,7 @@ func ParseConfig() Config {
 	fileName, _ := filepath.Abs("./conf.yaml")
 	yamlFile, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		log.Panic(err)
+		logger.Fatal(err)
 	}
 
 	conf := new(Config)
