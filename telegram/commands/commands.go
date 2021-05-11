@@ -1,12 +1,12 @@
 package commands
 
 import (
-	"fmt"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-
-	"github.com/nekomeowww/pero/logger"
+	"github.com/nekomeowww/pero/telegram/handler"
 )
+
+// Handlers 命令函数
+type Handlers map[string]func(*tgbotapi.BotAPI, tgbotapi.Update)
 
 // Parse 解析 Telegram 消息命令
 func Parse(message tgbotapi.Message) (bool, string, string) {
@@ -30,16 +30,11 @@ func ParseWithAt(message tgbotapi.Message) (bool, string, string) {
 }
 
 // Exec 执行命令
-func Exec(bot *tgbotapi.BotAPI, update tgbotapi.Update, command string) {
-	mCommand := map[string]func(*tgbotapi.BotAPI, tgbotapi.Update){
-		"info": commandInfo,
+func Exec(bot *tgbotapi.BotAPI, update tgbotapi.Update, commandFuncs handler.Groups) {
+	command := update.Message.Command()
+	for i := range commandFuncs {
+		if fc, ok := commandFuncs[i].Commands[command]; ok {
+			fc(bot, update)
+		}
 	}
-
-	if fc, ok := mCommand[command]; ok {
-		fc(bot, update)
-	}
-}
-
-func commandInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	logger.Info(fmt.Sprint("执行命令 info: ", update.Message.Text))
 }

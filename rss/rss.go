@@ -6,19 +6,25 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// RSS 结构
+type RSS struct {
+	Name string `json:"name"`
+	URI  string `json:"uri"`
+}
+
 // Feed 新的订阅源
 func Feed(conf config.Config) *cron.Cron {
 	c := cron.New()
 	c.AddFunc("@every 10s", func() {
-		for i := range conf.RSS {
-			newFeedFromURI(conf.RSS[i])
-		}
+		// for i := range conf.RSS {
+		// newFeedFromURI(conf.RSS[i])
+		// }
 	})
 	c.Start()
 	return c
 }
 
-func newFeedFromURI(rss config.RSS) {
+func newFeedFromURI(rss RSS) {
 	logger.Infof("更新订阅源：%s %s", rss.Name, rss.URI)
 	// fp := gofeed.NewParser()
 	// feed, err := fp.ParseURL(rss.URI)

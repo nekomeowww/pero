@@ -2,8 +2,6 @@
 token: "Token" # Telegram 机器人 Token
 debug: false # 是否开启调试模式
 
-# RSS 订阅设置
-rss:
-  -
-    name: "RSS 名称"
-    uri: "RSS 地址"
+# 数据库配置
+nutsdb: # nutsdb 配置
+  path: "./data/nutsdb" # 静态数据库存放路径

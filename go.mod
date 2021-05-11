@@ -14,9 +14,10 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/withmandala/go-log v0.1.0
+	github.com/xujiajun/nutsdb v0.6.0
 	golang.org/x/crypto v0.0.0-20210505212654-3497b51f5e64 // indirect
 	golang.org/x/net v0.0.0-20210505214959-0714010a04ed // indirect
-	golang.org/x/sys v0.0.0-20210503173754-0981d6026fa6 // indirect
+	golang.org/x/sys v0.0.0-20210507014357-30e306a8bba5 // indirect
 	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )

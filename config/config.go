@@ -2,9 +2,9 @@ package config
 
 import (
 	"io/ioutil"
-	"log"
 	"path/filepath"
 
+	"github.com/nekomeowww/pero/logger"
 	"gopkg.in/yaml.v2"
 )
 
@@ -12,13 +12,13 @@ import (
 type Config struct {
 	Token string `yaml:"token"`
 	Debug bool   `yaml:"debug"`
-	RSS   []RSS  `yaml:"rss"`
+
+	NutsDB NutsDB `yaml:"nutsdb"`
 }
 
-// RSS 配置结构
-type RSS struct {
-	Name string `yaml:"name"`
-	URI  string `yaml:"uri"`
+// NutsDB 配置
+type NutsDB struct {
+	Dir string `yaml:"path"`
 }
 
 // ParseConfig 解析配置文件
@@ -26,7 +26,7 @@ func ParseConfig() Config {
 	fileName, _ := filepath.Abs("./conf.yaml")
 	yamlFile, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		log.Panic(err)
+		logger.Fatal(err)
 	}
 
 	conf := new(Config)
